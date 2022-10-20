@@ -1,0 +1,13 @@
+.input-group.md-form.form-sm.form-3 input {
+    border: 1px solid #bdbdbd;
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+.input-group.md-form.form-sm.form-3 input[type=text]:focus:not([readonly]).amber-border  {
+    border: 1px solid #ffca28;
+    box-shadow: none;
+}
+body {
+    background-color: red;
+    color: red;
+}

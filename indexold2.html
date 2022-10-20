@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Product Supply Chain Blockchain App</title>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.7-rc.0/web3.min.js"></script>
+      <!-- Font Awesome -->
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+      <!-- Google Fonts -->
+      <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+      <!-- MDB -->
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/5.0.0/mdb.min.css" rel="stylesheet" />
+      <style>
+         .horizontal-timeline .items {
+         border-top: 3px solid #e9ecef;
+         }
+         .horizontal-timeline .items .items-list {
+         display: block;
+         position: relative;
+         text-align: center;
+         padding-top: 70px;
+         margin-right: 0;
+         }
+         .horizontal-timeline .items .items-list:before {
+         content: "";
+         position: absolute;
+         height: 36px;
+         border-right: 2px dashed #dee2e6;
+         top: 0;
+         }
+         .horizontal-timeline .items .items-list .event-date {
+         position: absolute;
+         top: 36px;
+         left: 0;
+         right: 0;
+         width: 75px;
+         margin: 0 auto;
+         font-size: 0.9rem;
+         padding-top: 8px;
+         }
+         @media (min-width: 1140px) {
+         .horizontal-timeline .items .items-list {
+         display: inline-block;
+         width: 24%;
+         padding-top: 45px;
+         }
+         .horizontal-timeline .items .items-list .event-date {
+         top: -40px;
+         }
+         }
+         .manual-form {
+         width: 100% !important;
+         display: inline-block !important;
+         border: 1px solid rgb(0, 0, 0) !important;
+         border-radius: 4px !important;
+         box-sizing: border-box !important;
+         }
+      </style>
+   </head>
+   <body class="text-center" onload="runfirst()">
+      <h1>Product Supply Chain Blockchain App</h1>
+      <h6>Developed by Enrico Serrano 19071299</h6>
+      <ul class="nav nav-tabs mb-2 justify-content-center" id="ex1" role="tablist">
+         <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="ex1-tab-1" data-mdb-toggle="tab" href="#ex1-tabs-1" role="tab"
+               aria-controls="ex1-tabs-1" aria-selected="true">Add Product Activity</a>
+         </li>
+         <li class="nav-item" role="presentation">
+            <a class="nav-link" id="ex1-tab-4" data-mdb-toggle="tab" href="#ex1-tabs-4" role="tab"
+               aria-controls="ex1-tabs-4" aria-selected="false">Set Contaminated Product</a>
+         </li>
+         <li class="nav-item" role="presentation">
+            <a class="nav-link" id="ex1-tab-2" data-mdb-toggle="tab" href="#ex1-tabs-2" role="tab"
+               aria-controls="ex1-tabs-2" aria-selected="false">Search for Product Activity</a>
+         </li>
+         <li class="nav-item" role="presentation">
+            <a class="nav-link" id="ex1-tab-3" data-mdb-toggle="tab" href="#ex1-tabs-3" role="tab"
+               aria-controls="ex1-tabs-3" aria-selected="false">View Contaminated Products</a>
+         </li>
+      </ul>
+      <div class="tab-content" id="ex1-content">
+         <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+            <!--Login form display-->
+            <div class="loginbuttondiv" id="loginbuttondiv">
+               <div class="d-grid gap-3 col-md-4 mx-auto">
+                  <div class="form-outline p-2">
+                     <input type="text" id="suppliercode" class="form-control" />
+                     <label class="form-label" for="suppliercode">Enter Supplier Code</label>
+                  </div>
+               </div>
+               <br>
+               <button type="button" class="btn btn-warning" onclick="loginsupplier()">Login</button>
+            </div>
+            <!--Login form display-->
+            <br>
+            <!--wrong code alert display-->
+            <div class="alert alert-danger" role="alert" id="wrongcodediv">
+               Wrong Supplier Access Code, Please try again!
+            </div>
+            <!--wrong code alert display-->
+            <br>
+            <!--supplier form display-->
+            <div class="supplierdiv" id="supplierdiv">
+               <div class="alert alert-danger" role="alert" id="contaminatedbanner">
+                  Product has been contaminated, creating transaction unsuccessful, please contact the Government
+               </div>
+               <button type="button" class="btn btn-warning" onclick="connectMetamask()">Connect to Metamask
+               Wallet</button>
+               <p id="accountArea"></p>
+               <button type="button" class="btn btn-info" onclick="connectContract()">Connect to Contract</button>
+               <p id="contractArea"></p>
+               <div class="d-grid gap-3 col-md-4 mx-auto">
+                  <div class="form-outline p-2">
+                     <input type="text" id="prodid" class="form-control" />
+                     <label class="form-label" for="prodid">Product ID</label>
+                  </div>
+                  <div class="form-outline p-2">
+                     <input type="text" id="prodname" class="form-control" />
+                     <label class="form-label" for="prodname">Product Name</label>
+                  </div>
+                  <div class="form-outline p-2">
+                     <input type="text" id="suppname" class="form-control" />
+                     <label class="form-label" for="suppname">Supplier Name</label>
+                  </div>
+                  <div class="form-outline p-2">
+                     <input type="text" id="supploc" class="form-control" />
+                     <label class="form-label" for="supploc">Supplier Location</label>
+                  </div>
+                  <div class="form-outline p-2">
+                     <input type="date" id="actdate" class="form-control" />
+                     <label class="form-label" for="actdate">Activity Date</label>
+                  </div>
+                  <div class="form-outline p-2">
+                     <label for="actdone">Activity Done</label>
+                     <select class="form-control" id="actdone">
+                        <option>Registered</option>
+                        <option>Processed</option>
+                        <option>Distributed</option>
+                        <option>Retail</option>
+                     </select>
+                  </div>
+               </div>
+               <br>
+               <button type="button" class="btn btn-success" onclick="supplierContract()">Create Product Activity</button>
+            </div>
+            <!--supplier form display-->
+            <br>
+            <!--Logout button display-->
+            <div class="logoutbuttondiv" id="logoutbuttondiv">
+               <button type="button" class="btn btn-danger btn-rounded" onclick="logoutsupplier()">Logout</button>
+            </div>
+            <!--Logout button display-->
+         </div>
+         <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
+            <div class="alert alert-success" role="alert" id="addcontaminatedbanner">
+               Successfuly added!
+            </div>
+            <div id="contaminationlogin">
+               <div class="d-grid gap-3 col-md-4 mx-auto">
+                  <div class="form-outline p-2">
+                     <input type="text" id="contaminationaccess" class="form-control manual-form" />
+                     <label class="form-label" for="contaminationaccess">Enter Government Access Code</label>
+                  </div>
+               </div>
+               <br>
+               <button type="button" class="btn btn-warning" onclick="contaminationLogin()">Login</button>
+            </div>
+            <br>
+            <div class="alert alert-danger" role="alert" id="wrongcontaminationdiv">
+               Wrong Contamination Access Code, Please try again!
+            </div>
+            <div id="contaminationForm">
+               <div class="d-grid gap-3 col-md-4 mx-auto">
+                  <div class="form-outline p-2">
+                     <input type="text" id="productidcont" class="form-control manual-form" />
+                     <label class="form-label" for="productidcont">Enter Product ID to tag as contaminated</label>
+                  </div>
+               </div>
+               <br>
+               <button type="button" class="btn btn-danger" onclick="setproductcont()">Product is Contaminated</button>
+               <br>
+               <br>
+               <button type="button" class="btn btn-danger btn-rounded" onclick="logoutContamination()">Logout</button>
+            </div>
+         </div>
+         <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+            <div class="d-grid gap-3 col-md-4 mx-auto">
+               <div class="form-outline p-2">
+                  <input type="text" id="searchprodid" class="form-control manual-form" />
+                  <label class="form-label" for="searchprodid">Enter Product ID</label>
+               </div>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="readContract()">Search for Product's Activity</button>
+            <br>
+            <br>
+            <div class="container-fluid py-5">
+               <div class="row">
+                  <div class="col-lg-12">
+                     <div class="horizontal-timeline">
+                        <ul class="list-inline items">
+                           <li class="list-inline-item items-list">
+                              <div class="px-4">
+                                 <div class="event-date badge bg-success"><img
+                                    src="http://localhost:8080/images/registericon.png" class="img-thumbnail"
+                                    alt="Hollywood Sign on The Hill" /></div>
+                                 <h5 class="pt-2">Registered</h5>
+                                 <p class="text-muted" id="regprodname">No Transaction Yet
+                                 </p>
+                                 <p class="text-muted" id="regsuppname">No Transaction Yet
+                                 </p>
+                                 <p class="text-muted" id="regsupploc">No Transaction Yet
+                                 </p>
+                                 <p class="text-muted" id="regactdate">No Transaction Yet
+                                 </p>
+                                 <div>
+                                 </div>
+                              </div>
+                           </li>
+                           <li class="list-inline-item items-list">
+                              <div class="px-4">
+                                 <div class="event-date badge bg-danger"><img
+                                    src="http://localhost:8080/images/processicon.png" class="img-thumbnail"
+                                    alt="Hollywood Sign on The Hill" /></div>
+                                 <h5 class="pt-2">Processed</h5>
+                                 <p class="text-muted" id="procprodname">No Transaction Yet
+                                 </p>
+                                 <p class="text-muted" id="procsuppname">No Transaction Yet
+                                 </p>
+                                 <p class="text-muted" id="procsupploc">No Transaction Yet
+                                 </p>
+                                 <p class="text-muted" id="procactdate">No Transaction Yet
+                                 </p>
+                                 <div>
+                                 </div>
+                              </div>
+                           </li>
+                           <li class="list-inline-item items-list">
+                              <div class="px-4">
+                                 <div class="event-date badge bg-info"><img
+                                    src="http://localhost:8080/images/distributeicon.png" class="img-thumbnail"
+                                    alt="Hollywood Sign on The Hill" /></div>
+                                 <h5 class="pt-2">Distributed</h5>
+                                 <p class="text-muted" id="disprodname">No Transaction Yet
+                                 </p>
+                                 <p class="text-muted" id="dissuppname">No Transaction Yet
+                                 </p>
+                                 <p class="text-muted" id="dissupploc">No Transaction Yet
+                                 </p>
+                                 <p class="text-muted" id="disactdate">No Transaction Yet
+                                 </p>
+                                 <div>
+                                 </div>
+                              </div>
+                           </li>
+                           <li class="list-inline-item items-list">
+                              <div class="px-4">
+                                 <div class="event-date badge bg-warning"><img
+                                    src="http://localhost:8080/images/retailicon.png" class="img-thumbnail"
+                                    alt="Hollywood Sign on The Hill" /></div>
+                                 <h5 class="pt-2">Retail</h5>
+                                 <p class="text-muted" id="retprodname">No Transaction Yet
+                                 </p>
+                                 <p class="text-muted" id="retsuppname">No Transaction Yet
+                                 </p>
+                                 <p class="text-muted" id="retsupploc">No Transaction Yet
+                                 </p>
+                                 <p class="text-muted" id="retactdate">No Transaction Yet
+                                 </p>
+                                 <div>
+                                 </div>
+                              </div>
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="alert alert-danger" role="alert" id="scontbanner">
+               This product is contaminated! Please contact the government
+            </div>
+         </div>
+         <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
+            <table id="userTable">
+               <thead>
+                  <tr>
+                     <th>Product ID</th>
+                     <th>Product Name</th>
+                     <th>Supplier Name</th>
+                     <th>Supplier Location</th>
+                     <th>Activity Date</th>
+                     <th>Activity Done</th>
+                  </tr>
+               </thead>
+               <tbody id="rows">
+               </tbody>
+            </table>
+            <button type="button" class="btn btn-success" onclick="displayproductcont()">Display Contaminated Products</button>
+         </div>
+      </div>
+      <script>
+         let account;
+         var contaminatedProductsArray = [];
+         const connectMetamask = async () => {
+            if (window.ethereum !== "undefined") {
+               const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+               account = accounts[0];
+               document.getElementById("accountArea").innerHTML = account;
+            }
+         }
+         
+         //2- connect to smart contract
+         const connectContract = async () => {
+            const ABI = [
+         {
+         "inputs": [
+         {
+         "internalType": "uint256",
+         "name": "prodid",
+         "type": "uint256"
+         },
+         {
+         "internalType": "string",
+         "name": "prodname",
+         "type": "string"
+         },
+         {
+         "internalType": "string",
+         "name": "suppname",
+         "type": "string"
+         },
+         {
+         "internalType": "string",
+         "name": "supplocation",
+         "type": "string"
+         },
+         {
+         "internalType": "string",
+         "name": "actdone",
+         "type": "string"
+         },
+         {
+         "internalType": "string",
+         "name": "actdate",
+         "type": "string"
+         }
+         ],
+         "name": "addTransaction",
+         "outputs": [],
+         "stateMutability": "nonpayable",
+         "type": "function"
+         },
+         {
+         "inputs": [
+         {
+         "internalType": "uint256",
+         "name": "prodidinput",
+         "type": "uint256"
+         }
+         ],
+         "name": "contidsearch",
+         "outputs": [
+         {
+         "internalType": "string",
+         "name": "",
+         "type": "string"
+         }
+         ],
+         "stateMutability": "nonpayable",
+         "type": "function"
+         },
+         {
+         "inputs": [
+         {
+         "internalType": "uint256",
+         "name": "prodidinput",
+         "type": "uint256"
+         }
+         ],
+         "name": "prodidsearch",
+         "outputs": [
+         {
+         "internalType": "string",
+         "name": "",
+         "type": "string"
+         }
+         ],
+         "stateMutability": "nonpayable",
+         "type": "function"
+         },
+         {
+         "inputs": [],
+         "name": "transactionCount",
+         "outputs": [
+         {
+         "internalType": "uint256",
+         "name": "",
+         "type": "uint256"
+         }
+         ],
+         "stateMutability": "view",
+         "type": "function"
+         },
+         {
+         "inputs": [
+         {
+         "internalType": "uint256",
+         "name": "",
+         "type": "uint256"
+         }
+         ],
+         "name": "transactions",
+         "outputs": [
+         {
+         "internalType": "uint256",
+         "name": "transactionid",
+         "type": "uint256"
+         },
+         {
+         "internalType": "uint256",
+         "name": "prodid",
+         "type": "uint256"
+         },
+         {
+         "internalType": "string",
+         "name": "prodname",
+         "type": "string"
+         },
+         {
+         "internalType": "string",
+         "name": "suppname",
+         "type": "string"
+         },
+         {
+         "internalType": "string",
+         "name": "supplocation",
+         "type": "string"
+         },
+         {
+         "internalType": "string",
+         "name": "actdone",
+         "type": "string"
+         },
+         {
+         "internalType": "string",
+         "name": "actdate",
+         "type": "string"
+         }
+         ],
+         "stateMutability": "view",
+         "type": "function"
+         }
+         ];
+            const Address = "0xA4F07bbE7eBA19eA10c7C3774719c28A77Dd3c22";
+            window.web3 = await new Web3(window.ethereum);
+            window.contract = await new window.web3.eth.Contract(ABI, Address);
+            document.getElementById("contractArea").innerHTML = "Successfuly connected to Smart Contract";
+         }
+         
+         //creating supplier contract
+         const supplierContract = async () => {
+         
+            var contaminationStatus = false;
+         
+            const prodid = document.getElementById("prodid").value;
+            const prodname = document.getElementById("prodname").value;
+            const suppname = document.getElementById("suppname").value;
+            const supploc = document.getElementById("supploc").value;
+            const actdone = document.getElementById("actdone").value;
+            const actdate = document.getElementById("actdate").value;
+         
+            if(contaminatedProductsArray.includes(prodid) == true) {
+               document.getElementById('contaminatedbanner').style.display = 'block';
+            } else {
+               document.getElementById('contaminatedbanner').style.display = 'none';
+               await window.contract.methods.addTransaction(prodid, prodname, suppname, supploc, actdone, actdate).send({ from: account });
+            }
+            /*
+            var storedNames = contaminatedProductsArray;
+            for (let i = 0; i < storedNames.length; i++) {
+               if(storedNames[i] == prodid) {
+                  contaminationStatus = true;
+               } else {
+                  contaminationStatus = false;
+               }
+            }
+            if (contaminationStatus == true) {
+               document.getElementById('contaminatedbanner').style.display = 'block';
+            } else {
+               document.getElementById('contaminatedbanner').style.display = 'none';
+               await window.contract.methods.addTransaction(prodid, prodname, suppname, supploc, actdone, actdate).send({ from: account });
+            }
+            */
+         }
+         
+         //3-read data from smart contract
+         const readContract = async () => {
+         
+            const searchprodid = document.getElementById("searchprodid").value;
+            //var contaminationStatus = false;
+            /*
+            var storedNames = contaminatedProductsArray;
+            for (let i = 0; i < storedNames.length; i++) {
+               if(storedNames[i] == searchprodid) {
+                  contaminationStatus = true;
+               } else {
+                  contaminationStatus = false;
+               }
+            }
+            if (contaminationStatus == true) {
+               document.getElementById('scontbanner').style.display = 'block';
+            } else {
+               document.getElementById('scontbanner').style.display = 'none';
+            }
+            */
+            if(contaminatedProductsArray.includes(searchprodid) == true) {
+               document.getElementById('scontbanner').style.display = 'block';
+            } else {
+               document.getElementById('scontbanner').style.display = 'none';
+            }
+            //Without Values
+            document.getElementById("regprodname").innerHTML = "No Transaction Yet";
+            document.getElementById("regsuppname").innerHTML = "No Transaction Yet";
+            document.getElementById("regsupploc").innerHTML = "No Transaction Yet";
+            document.getElementById("regactdate").innerHTML = "No Transaction Yet";
+            document.getElementById("procprodname").innerHTML = "No Transaction Yet";
+            document.getElementById("procsuppname").innerHTML = "No Transaction Yet";
+            document.getElementById("procsupploc").innerHTML = "No Transaction Yet";
+            document.getElementById("procactdate").innerHTML = "No Transaction Yet";
+            document.getElementById("disprodname").innerHTML = "No Transaction Yet";
+            document.getElementById("dissuppname").innerHTML = "No Transaction Yet";
+            document.getElementById("dissupploc").innerHTML = "No Transaction Yet";
+            document.getElementById("disactdate").innerHTML = "No Transaction Yet";
+            document.getElementById("retprodname").innerHTML = "No Transaction Yet";
+            document.getElementById("retsuppname").innerHTML = "No Transaction Yet";
+            document.getElementById("retsupploc").innerHTML = "No Transaction Yet";
+            document.getElementById("retactdate").innerHTML = "No Transaction Yet";
+            //With Values
+            const data = await window.contract.methods.prodidsearch(searchprodid).call();
+            const [RegisteredData, ProcessedData, DistributedData, RetailData] = data.split('~');
+            const [regprodname, regsuppname, regsupploc, regactdone, regactdate] = RegisteredData.split('|');
+            //Registration values
+            document.getElementById("regprodname").innerHTML = regprodname;
+            document.getElementById("regsuppname").innerHTML = regsuppname;
+            document.getElementById("regsupploc").innerHTML = regsupploc;
+            document.getElementById("regactdate").innerHTML = regactdate;
+            const [procprodname, procsuppname, procsupploc, procactdone, procactdate] = ProcessedData.split('|');
+            //Process values
+            document.getElementById("procprodname").innerHTML = procprodname;
+            document.getElementById("procsuppname").innerHTML = procsuppname;
+            document.getElementById("procsupploc").innerHTML = procsupploc;
+            document.getElementById("procactdate").innerHTML = procactdate;
+            const [disprodname, dissuppname, dissupploc, disactdone, disactdate] = DistributedData.split('|');
+            //Distribution values
+            document.getElementById("disprodname").innerHTML = disprodname;
+            document.getElementById("dissuppname").innerHTML = dissuppname;
+            document.getElementById("dissupploc").innerHTML = dissupploc;
+            document.getElementById("disactdate").innerHTML = disactdate;
+            const [retprodname, retsuppname, retsupploc, retactdone, retactdate] = RetailData.split('|');
+            //Retail values
+            document.getElementById("retprodname").innerHTML = retprodname;
+            document.getElementById("retsuppname").innerHTML = retsuppname;
+            document.getElementById("retsupploc").innerHTML = retsupploc;
+            document.getElementById("retactdate").innerHTML = retactdate;
+         
+            /*
+            document.getElementById("RegisteredData").innerHTML = RegisteredData;
+            document.getElementById("ProcessedData").innerHTML = ProcessedData;
+            document.getElementById("DistributedData").innerHTML = DistributedData;
+            document.getElementById("RetailData").innerHTML = RetailData;
+            */
+         
+            /*
+            var storedNames = JSON.parse(localStorage.getItem("contaminatedProducts"));
+            for (let i = 0; i < storedNames.length; i++) {
+               if(storedNames[i] == searchprodid) {
+                  contaminationStatus = true;
+                  console.log("contaminated!");
+               } else {
+                  contaminationStatus = false;
+               }
+            }
+            if (contaminationStatus == true) {
+               document.getElementById('scontbanner').style.display = 'block';
+               contaminationStatus = false;
+            } else {
+               document.getElementById('scontbanner').style.display = 'none';
+            }
+            contaminationStatus = false;
+            */
+         }
+         
+         const loginsupplier = async () => {
+            const suppliercode = document.getElementById("suppliercode").value;
+            if (suppliercode === 'supplier') {
+               document.getElementById('supplierdiv').style.display = 'block';
+               document.getElementById('logoutbuttondiv').style.display = 'block';
+               document.getElementById('loginbuttondiv').style.display = 'none';
+               document.getElementById('wrongcodediv').style.display = 'none';
+            } else {
+               document.getElementById('wrongcodediv').style.display = 'block';
+            }
+         
+         }
+         
+         const logoutsupplier = async () => {
+            document.getElementById('supplierdiv').style.display = 'none';
+            document.getElementById('logoutbuttondiv').style.display = 'none';
+            document.getElementById('loginbuttondiv').style.display = 'block';
+            document.getElementById('suppliercode').value = '';
+            //
+            document.getElementById('contaminatedbanner').style.display = 'none';
+            document.getElementById('prodid').value= '';
+            document.getElementById('prodname').value= '';
+            document.getElementById('suppname').value= '';
+            document.getElementById('supploc').value= '';
+            document.getElementById('actdate').value= '';
+         }
+         
+         const runfirst = async () => {
+            document.getElementById('supplierdiv').style.display = 'none';
+            document.getElementById('logoutbuttondiv').style.display = 'none';
+            document.getElementById('loginbuttondiv').style.display = 'block';
+            document.getElementById('wrongcodediv').style.display = 'none';
+            document.getElementById('contaminatedbanner').style.display = 'none';
+            document.getElementById('addcontaminatedbanner').style.display = 'none';
+            //
+            document.getElementById('scontbanner').style.display = 'none';
+            //
+            document.getElementById('contaminationForm').style.display = 'none';
+            document.getElementById('contaminationlogin').style.display = 'block';
+            document.getElementById('wrongcontaminationdiv').style.display = 'none';
+         }
+         
+         const setproductcont = async () => {
+            /*
+            const productidcont = document.getElementById("productidcont").value;
+         
+            var contaminatedProducts = [];
+            contaminatedProducts[0] = 0;
+            contaminatedProducts[contaminatedProducts.length + 1] = productidcont;
+            localStorage.setItem("contaminatedProducts", JSON.stringify(contaminatedProducts));
+            document.getElementById("productidcont").value = '';
+            document.getElementById('addcontaminatedbanner').style.display = 'block';
+            console.log(contaminatedProducts);
+            */
+            const productidcont = document.getElementById("productidcont").value;
+         
+         
+            contaminatedProductsArray.push(productidcont);
+            document.getElementById("productidcont").value = '';
+            document.getElementById('addcontaminatedbanner').style.display = 'block';
+            console.log(contaminatedProductsArray);
+         
+         }
+         const displayproductcont = async () => {
+            /*
+            var storedNames = JSON.parse(localStorage.getItem("contaminatedProducts"));
+            document.getElementById("asd").innerHTML = storedNames[1];
+            */
+         
+            for (let i = 0; i < contaminatedProductsArray.length; i++) {
+               var data = await window.contract.methods.contidsearch(contaminatedProductsArray[i]).call();
+               var [RegisteredData, ProcessedData, DistributedData, RetailData] = data.split('~');
+         
+               if (RegisteredData !== 0) {
+                  var [regprodname, regsuppname, regsupploc, regactdone, regactdate] = RegisteredData.split('|');
+                  var newRow1 = document.createElement("tr");
+                  var newCell1 = document.createElement("td");
+                  var newCell2 = document.createElement("td");
+                  var newCell3 = document.createElement("td");
+                  var newCell4 = document.createElement("td");
+                  var newCell5 = document.createElement("td");
+                  var newCell6 = document.createElement("td");
+         
+                  newCell1.innerHTML = contaminatedProductsArray[i];
+                  newRow1.append(newCell1);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("id")
+         
+                  newCell2.innerHTML = regprodname;
+                  newRow1.append(newCell2);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("name")
+         
+                  newCell3.innerHTML = regsuppname;
+                  newRow1.append(newCell3);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("regname")
+         
+                  newCell4.innerHTML = regsupploc;
+                  newRow1.append(newCell4);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("regsupploc")
+         
+                  newCell5.innerHTML = regactdone;
+                  newRow1.append(newCell5);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("nregact")
+         
+                  newCell6.innerHTML = regactdate;
+                  newRow1.append(newCell6);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("asd")
+               }
+               if (ProcessedData !== 0) {
+                  var [procprodname, procsuppname, procsupploc, procactdone, procactdate] = ProcessedData.split('|');
+         
+                  var newRow1 = document.createElement("tr");
+                  var newCell1 = document.createElement("td");
+                  var newCell2 = document.createElement("td");
+                  var newCell3 = document.createElement("td");
+                  var newCell4 = document.createElement("td");
+                  var newCell5 = document.createElement("td");
+                  var newCell6 = document.createElement("td");
+         
+                  newCell1.innerHTML = contaminatedProductsArray[i];
+                  newRow1.append(newCell1);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("id")
+         
+                  newCell2.innerHTML = procprodname;
+                  newRow1.append(newCell2);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("name")
+         
+                  newCell3.innerHTML = procsuppname;
+                  newRow1.append(newCell3);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("regname")
+         
+                  newCell4.innerHTML = procsupploc;
+                  newRow1.append(newCell4);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("regsupploc")
+         
+                  newCell5.innerHTML = procactdone;
+                  newRow1.append(newCell5);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("nregact")
+         
+                  newCell6.innerHTML = procactdate;
+                  newRow1.append(newCell6);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("asd")
+               }
+               if (DistributedData !== 0) {
+                  var [disprodname, dissuppname, dissupploc, disactdone, disactdate] = DistributedData.split('|');
+         
+                  var newRow1 = document.createElement("tr");
+                  var newCell1 = document.createElement("td");
+                  var newCell2 = document.createElement("td");
+                  var newCell3 = document.createElement("td");
+                  var newCell4 = document.createElement("td");
+                  var newCell5 = document.createElement("td");
+                  var newCell6 = document.createElement("td");
+         
+                  newCell1.innerHTML = contaminatedProductsArray[i];
+                  newRow1.append(newCell1);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("id")
+         
+                  newCell2.innerHTML = disprodname;
+                  newRow1.append(newCell2);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("name")
+         
+                  newCell3.innerHTML = dissuppname;
+                  newRow1.append(newCell3);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("regname")
+         
+                  newCell4.innerHTML = dissupploc;
+                  newRow1.append(newCell4);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("regsupploc")
+         
+                  newCell5.innerHTML = disactdone;
+                  newRow1.append(newCell5);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("nregact")
+         
+                  newCell6.innerHTML = disactdate;
+                  newRow1.append(newCell6);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("asd")
+               }
+               if (RetailData !== 0) {
+                  var [retprodname, retsuppname, retsupploc, retactdone, retactdate] = RetailData.split('|');
+         
+                  var newRow1 = document.createElement("tr");
+                  var newCell1 = document.createElement("td");
+                  var newCell2 = document.createElement("td");
+                  var newCell3 = document.createElement("td");
+                  var newCell4 = document.createElement("td");
+                  var newCell5 = document.createElement("td");
+                  var newCell6 = document.createElement("td");
+         
+                  newCell1.innerHTML = contaminatedProductsArray[i];
+                  newRow1.append(newCell1);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("id")
+         
+                  newCell2.innerHTML = retprodname;
+                  newRow1.append(newCell2);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("name")
+         
+                  newCell3.innerHTML = retsuppname;
+                  newRow1.append(newCell3);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("regname")
+         
+                  newCell4.innerHTML = retsupploc;
+                  newRow1.append(newCell4);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("regsupploc")
+         
+                  newCell5.innerHTML = retactdone;
+                  newRow1.append(newCell5);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("nregact")
+         
+                  newCell6.innerHTML = retactdate;
+                  newRow1.append(newCell6);
+                  document.getElementById("rows").appendChild(newRow1);
+                  console.log("asd")
+               }
+               RegisteredData = [];
+               ProcessedData = [];
+               DistributedData = [];
+               RetailData = [];
+               /*
+               const [regprodname, regsuppname, regsupploc, regactdone, regactdate] = RegisteredData.split('|');
+               const [procprodname, procsuppname, procsupploc, procactdone, procactdate] = ProcessedData.split('|');
+               const [disprodname, dissuppname, dissupploc, disactdone, disactdate] = DistributedData.split('|');
+               const [retprodname, retsuppname, retsupploc, retactdone, retactdate] = RetailData.split('|');
+               */
+            }
+         
+            /*
+            var newRow = document.createElement("tr");
+            var newCell = document.createElement("td");
+            newCell.innerHTML = personName;
+            newRow.append(newCell);
+            document.getElementById("rows").appendChild(newRow);
+            */
+         }
+         
+         const contaminationLogin = async () => {
+            const contaminationcode = document.getElementById("contaminationaccess").value;
+            if (contaminationcode === 'government') {
+               document.getElementById('contaminationForm').style.display = 'block';
+               document.getElementById('contaminationlogin').style.display = 'none';
+               document.getElementById('wrongcontaminationdiv').style.display = 'none';
+            } else {
+               document.getElementById('wrongcontaminationdiv').style.display = 'block';
+            }
+         }
+         
+         const logoutContamination = async () => {
+            document.getElementById('contaminationForm').style.display = 'none';
+            document.getElementById('contaminationlogin').style.display = 'block';
+            document.getElementById('wrongcontaminationdiv').style.display = 'none';
+            document.getElementById('productidcont').value= '';
+            document.getElementById('contaminationaccess').value= '';
+            document.getElementById('addcontaminatedbanner').style.display = 'none';
+         }
+         
+      </script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/5.0.0/mdb.min.js"></script>
+   </body>
+</html>
